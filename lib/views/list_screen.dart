@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:orders_manager/views/widgets/app_card.dart';
+import 'package:orders_manager/views/widgets/confirm_action_dialog.dart';
 import 'package:orders_manager/views/widgets/custom_text_field.dart';
 import 'package:orders_manager/views/widgets/empty_state_widget.dart';
 import 'package:orders_manager/views/widgets/order_form_dialog.dart';
@@ -69,7 +70,17 @@ class ListScreen extends StatelessWidget {
                     height: 40,
                     child: ElevatedButton(
                       onPressed: () async {
-                        await controller.clearAllOrders();
+                        final confirmed = await showConfirmActionDialog(
+                          context: context,
+                          title: 'Clear all orders?',
+                          message:
+                              'This will delete every order from the list.',
+                          confirmText: 'Clear All',
+                        );
+
+                        if (confirmed) {
+                          await controller.clearAllOrders();
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.black,
@@ -107,7 +118,16 @@ class ListScreen extends StatelessWidget {
                     await _showEditDialog(context, order);
                   },
                   onDelete: () async {
-                    await controller.deleteOrder(order.id!);
+                    final confirmed = await showConfirmActionDialog(
+                      context: context,
+                      title: 'Delete order?',
+                      message: 'This order will be removed permanently.',
+                      confirmText: 'Delete',
+                    );
+
+                    if (confirmed) {
+                      await controller.deleteOrder(order.id!);
+                    }
                   },
                 ),
               );

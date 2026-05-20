@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:orders_manager/views/widgets/confirm_action_dialog.dart';
 import 'package:orders_manager/views/widgets/empty_state_widget.dart';
 import 'package:orders_manager/views/widgets/primary_button.dart';
 import 'package:orders_manager/views/widgets/selected_order_card.dart';
@@ -61,7 +62,16 @@ class SelectedScreen extends StatelessWidget {
                     await controller.toggleSelected(order, false);
                   },
                   onDelete: () async {
-                    await controller.deleteOrder(order.id!);
+                    final confirmed = await showConfirmActionDialog(
+                      context: context,
+                      title: 'Delete selected order?',
+                      message: 'This order will be removed permanently.',
+                      confirmText: 'Delete',
+                    );
+
+                    if (confirmed) {
+                      await controller.deleteOrder(order.id!);
+                    }
                   },
                 ),
               ),

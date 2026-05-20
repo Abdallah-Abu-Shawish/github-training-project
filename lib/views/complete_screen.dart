@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:orders_manager/views/widgets/completed_order_card.dart';
+import 'package:orders_manager/views/widgets/confirm_action_dialog.dart';
 import 'package:orders_manager/views/widgets/empty_state_widget.dart';
 import 'package:orders_manager/views/widgets/summary_card.dart';
 import '../controllers/order_controller.dart';
@@ -44,7 +45,17 @@ class CompleteScreen extends StatelessWidget {
                     order.completedAt,
                   ),
                   onDelete: () async {
-                    await controller.deleteOrder(order.id!);
+                    final confirmed = await showConfirmActionDialog(
+                      context: context,
+                      title: 'Delete completed order?',
+                      message:
+                          'This completed order will be removed permanently.',
+                      confirmText: 'Delete',
+                    );
+
+                    if (confirmed) {
+                      await controller.deleteOrder(order.id!);
+                    }
                   },
                 ),
               ),
