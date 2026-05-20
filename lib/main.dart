@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:orders_manager/views/splash_screen.dart';
 
 void main() {
@@ -11,7 +12,7 @@ class OrdersApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Orders Manager',
       theme: ThemeData(

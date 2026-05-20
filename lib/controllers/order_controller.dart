@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../database/db_helper.dart';
 import '../models/order_model.dart';
 
-class OrderController {
+class OrderController extends GetxController {
+  final RxList<OrderModel> orders = <OrderModel>[].obs;
+  final RxBool isLoading = false.obs;
+
+  Future<void> loadOrders() async {
+    isLoading.value = true;
+
+    final loadedOrders = await getAllOrders();
+    orders.assignAll(loadedOrders);
+
+    isLoading.value = false;
+  }
+
   Future<List<OrderModel>> getAllOrders() async {
     final db = await DBHelper.database;
     final result = await db.query('orders', orderBy: 'id DESC');
@@ -22,6 +35,8 @@ class OrderController {
       'updated_at': now,
       'completed_at': null,
     });
+
+    await loadOrders();
   }
 
   Future<void> updateOrder(OrderModel order) async {
@@ -32,16 +47,20 @@ class OrderController {
       where: 'id = ?',
       whereArgs: [order.id],
     );
+
+    await loadOrders();
   }
 
   Future<void> deleteOrder(int id) async {
     final db = await DBHelper.database;
     await db.delete('orders', where: 'id = ?', whereArgs: [id]);
+    await loadOrders();
   }
 
   Future<void> clearAllOrders() async {
     final db = await DBHelper.database;
     await db.delete('orders');
+    await loadOrders();
   }
 
   Future<void> toggleSelected(OrderModel order, bool value) async {
@@ -55,6 +74,8 @@ class OrderController {
       where: 'id = ?',
       whereArgs: [order.id],
     );
+
+    await loadOrders();
   }
 
   Future<int> completeSelectedItems() async {
@@ -79,6 +100,7 @@ class OrderController {
       whereArgs: [1, 0],
     );
 
+    await loadOrders();
     return selected.length;
   }
 

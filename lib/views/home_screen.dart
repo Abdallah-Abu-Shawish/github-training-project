@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:orders_manager/views/complete_screen.dart';
 import 'package:orders_manager/views/selected_screen.dart';
 import '../controllers/order_controller.dart';
-import '../models/order_model.dart';
 import 'list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,24 +13,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final OrderController controller = OrderController();
+  final OrderController controller = Get.put(OrderController());
   final TextEditingController productController = TextEditingController();
   final TextEditingController quantityController = TextEditingController();
 
   int currentIndex = 0;
-  List<OrderModel> allOrders = [];
-  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    loadOrders();
-  }
-
-  Future<void> loadOrders() async {
-    setState(() => isLoading = true);
-    allOrders = await controller.getAllOrders();
-    setState(() => isLoading = false);
+    controller.loadOrders();
   }
 
   Future<void> addOrder() async {
@@ -42,7 +34,6 @@ class _HomeScreenState extends State<HomeScreen> {
     await controller.addOrder(name, qty);
     productController.clear();
     quantityController.clear();
-    await loadOrders();
   }
 
   void showCompleteMessage(int count) {
@@ -61,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    Get.delete<OrderController>();
     productController.dispose();
     quantityController.dispose();
     super.dispose();
@@ -68,28 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = [
-      ListScreen(
-        controller: controller,
-        allOrders: allOrders,
-        productController: productController,
-        quantityController: quantityController,
-        onAdd: addOrder,
-        onRefresh: loadOrders,
-      ),
-      SelectedScreen(
-        controller: controller,
-        allOrders: allOrders,
-        onRefresh: loadOrders,
-        onCompleted: showCompleteMessage,
-      ),
-      CompleteScreen(
-        controller: controller,
-        allOrders: allOrders,
-        onRefresh: loadOrders,
-      ),
-    ];
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
@@ -100,9 +70,29 @@ class _HomeScreenState extends State<HomeScreen> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : pages[currentIndex],
+      body: Obx(
+        () {
+          final pages = [
+            ListScreen(
+              controller: controller,
+              productController: productController,
+              quantityController: quantityController,
+              onAdd: addOrder,
+            ),
+            SelectedScreen(
+              controller: controller,
+              onCompleted: showCompleteMessage,
+            ),
+            CompleteScreen(controller: controller),
+          ];
+
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return pages[currentIndex];
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
         selectedItemColor: Colors.white,

@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:orders_manager/views/widgets/completed_order_card.dart';
 import '../controllers/order_controller.dart';
-import '../models/order_model.dart';
 
 class CompleteScreen extends StatelessWidget {
   final OrderController controller;
-  final List<OrderModel> allOrders;
-  final Future<void> Function() onRefresh;
 
   const CompleteScreen({
     super.key,
     required this.controller,
-    required this.allOrders,
-    required this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
-    final completedItems = controller.completedItems(allOrders);
-    final totalQuantity = controller.completedTotalQuantity(allOrders);
+    final completedItems = controller.completedItems(controller.orders);
+    final totalQuantity = controller.completedTotalQuantity(controller.orders);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -54,7 +49,7 @@ class CompleteScreen extends StatelessWidget {
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 const SizedBox(height: 18),
-                Container(height: 1, color: Colors.white.withOpacity(0.3)),
+                Container(height: 1, color: Colors.white.withValues(alpha: 0.3)),
                 const SizedBox(height: 18),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -105,7 +100,6 @@ class CompleteScreen extends StatelessWidget {
                   completedDate: controller.formatCompletedDate(order.completedAt),
                   onDelete: () async {
                     await controller.deleteOrder(order.id!);
-                    await onRefresh();
                   },
                 ),
               ),

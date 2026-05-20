@@ -2,28 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:orders_manager/views/widgets/primary_button.dart';
 import 'package:orders_manager/views/widgets/selected_order_card.dart';
 import '../controllers/order_controller.dart';
-import '../models/order_model.dart';
-
 
 
 class SelectedScreen extends StatelessWidget {
   final OrderController controller;
-  final List<OrderModel> allOrders;
-  final Future<void> Function() onRefresh;
   final void Function(int count) onCompleted;
 
   const SelectedScreen({
     super.key,
     required this.controller,
-    required this.allOrders,
-    required this.onRefresh,
     required this.onCompleted,
   });
 
   @override
   Widget build(BuildContext context) {
-    final selectedItems = controller.selectedItems(allOrders);
-    final totalQuantity = controller.selectedTotalQuantity(allOrders);
+    final selectedItems = controller.selectedItems(controller.orders);
+    final totalQuantity = controller.selectedTotalQuantity(controller.orders);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -37,7 +31,7 @@ class SelectedScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -59,7 +53,6 @@ class SelectedScreen extends StatelessWidget {
                     foregroundColor: Colors.white,
                     onPressed: () async {
                       final count = await controller.completeSelectedItems();
-                      await onRefresh();
                       onCompleted(count);
                     },
                   ),
@@ -85,11 +78,9 @@ class SelectedScreen extends StatelessWidget {
                   order: order,
                   onUnselect: () async {
                     await controller.toggleSelected(order, false);
-                    await onRefresh();
                   },
                   onDelete: () async {
                     await controller.deleteOrder(order.id!);
-                    await onRefresh();
                   },
                 ),
               ),
@@ -103,7 +94,7 @@ class SelectedScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(18),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),

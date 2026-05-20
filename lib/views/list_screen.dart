@@ -3,29 +3,24 @@ import 'package:orders_manager/views/widgets/custom_text_field.dart';
 import 'package:orders_manager/views/widgets/order_list_card.dart';
 import 'package:orders_manager/views/widgets/primary_button.dart';
 import '../controllers/order_controller.dart';
-import '../models/order_model.dart';
 
 class ListScreen extends StatelessWidget {
   final OrderController controller;
-  final List<OrderModel> allOrders;
   final TextEditingController productController;
   final TextEditingController quantityController;
   final Future<void> Function() onAdd;
-  final Future<void> Function() onRefresh;
 
   const ListScreen({
     super.key,
     required this.controller,
-    required this.allOrders,
     required this.productController,
     required this.quantityController,
     required this.onAdd,
-    required this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
-    final listItems = controller.listItems(allOrders);
+    final listItems = controller.listItems(controller.orders);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -39,7 +34,7 @@ class ListScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -78,7 +73,6 @@ class ListScreen extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () async {
                       await controller.clearAllOrders();
-                      await onRefresh();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
@@ -117,18 +111,16 @@ class ListScreen extends StatelessWidget {
                     displayIndex: index + 1,
                     onToggle: (value) async {
                       await controller.toggleSelected(order, value);
-                      await onRefresh();
                     },
                     onEdit: () async {
                       await controller.showEditDialog(
                         context: context,
                         order: order,
-                        onUpdated: () async => await onRefresh(),
+                        onUpdated: () {},
                       );
                     },
                     onDelete: () async {
                       await controller.deleteOrder(order.id!);
-                      await onRefresh();
                     },
                   ),
                 );
