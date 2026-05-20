@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'custom_text_field.dart';
 
 class OrderFormDialog extends StatefulWidget {
@@ -119,6 +120,7 @@ class _OrderFormDialogState extends State<OrderFormDialog> {
               controller: quantityController,
               hintText: '1',
               keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
             if (errorMessage != null) ...[
               const SizedBox(height: 12),

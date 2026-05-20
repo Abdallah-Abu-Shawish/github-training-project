@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:orders_manager/views/widgets/app_card.dart';
 import 'package:orders_manager/views/widgets/confirm_action_dialog.dart';
 import 'package:orders_manager/views/widgets/custom_text_field.dart';
@@ -56,6 +57,7 @@ class ListScreen extends StatelessWidget {
                   controller: quantityController,
                   hintText: '1',
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
                 const SizedBox(height: 18),
                 PrimaryButton(text: 'Add', onPressed: () => onAdd()),
