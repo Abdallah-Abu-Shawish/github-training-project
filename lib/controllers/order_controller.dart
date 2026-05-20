@@ -5,6 +5,7 @@ import '../models/order_model.dart';
 class OrderController extends GetxController {
   final RxList<OrderModel> orders = <OrderModel>[].obs;
   final RxBool isLoading = false.obs;
+  final RxnString errorMessage = RxnString();
 
   int get totalOrders => orders.length;
   int get selectedOrdersCount => selectedItems(orders).length;
@@ -14,11 +15,16 @@ class OrderController extends GetxController {
 
   Future<void> loadOrders() async {
     isLoading.value = true;
+    errorMessage.value = null;
 
-    final loadedOrders = await getAllOrders();
-    orders.assignAll(loadedOrders);
-
-    isLoading.value = false;
+    try {
+      final loadedOrders = await getAllOrders();
+      orders.assignAll(loadedOrders);
+    } catch (_) {
+      errorMessage.value = 'Could not load orders. Please try again.';
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future<List<OrderModel>> getAllOrders() async {
