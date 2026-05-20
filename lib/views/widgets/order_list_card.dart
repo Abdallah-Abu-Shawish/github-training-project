@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../models/order_model.dart';
+import 'app_card.dart';
 
 class OrderListCard extends StatelessWidget {
   final OrderModel order;
@@ -19,19 +20,8 @@ class OrderListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AppCard(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

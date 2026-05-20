@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/order_model.dart';
+import 'app_card.dart';
 
 class SelectedOrderCard extends StatelessWidget {
   final OrderModel order;
@@ -15,23 +16,15 @@ class SelectedOrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
+    return AppCard(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Row(
         children: [
-          const Icon(Icons.check_circle_outline, color: Color(0xFF06A537), size: 28),
+          const Icon(
+            Icons.check_circle_outline,
+            color: Color(0xFF06A537),
+            size: 28,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -48,7 +41,10 @@ class SelectedOrderCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   'Quantity: ${order.quantity}',
-                  style: const TextStyle(fontSize: 14, color: Color(0xFF5E6C84)),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF5E6C84),
+                  ),
                 ),
               ],
             ),
@@ -57,7 +53,10 @@ class SelectedOrderCard extends StatelessWidget {
             onPressed: onUnselect,
             child: const Text(
               'Unselect',
-              style: TextStyle(color: Color(0xFF334E75), fontWeight: FontWeight.w600),
+              style: TextStyle(
+                color: Color(0xFF334E75),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           IconButton(

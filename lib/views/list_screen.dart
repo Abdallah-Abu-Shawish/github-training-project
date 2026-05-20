@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:orders_manager/views/widgets/app_card.dart';
 import 'package:orders_manager/views/widgets/custom_text_field.dart';
+import 'package:orders_manager/views/widgets/empty_state_widget.dart';
+import 'package:orders_manager/views/widgets/order_form_dialog.dart';
 import 'package:orders_manager/views/widgets/order_list_card.dart';
 import 'package:orders_manager/views/widgets/primary_button.dart';
+import 'package:orders_manager/views/widgets/section_header.dart';
 import '../controllers/order_controller.dart';
+import '../models/order_model.dart';
 
 class ListScreen extends StatelessWidget {
   final OrderController controller;
@@ -27,27 +32,24 @@ class ListScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
+          AppCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Product Name', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Product Name',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 8),
-                CustomTextField(controller: productController, hintText: 'Enter product name'),
+                CustomTextField(
+                  controller: productController,
+                  hintText: 'Enter product name',
+                ),
                 const SizedBox(height: 16),
-                const Text('Quantity', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                const Text(
+                  'Quantity',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 8),
                 CustomTextField(
                   controller: quantityController,
@@ -60,74 +62,80 @@ class ListScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 28),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Registered Orders (${listItems.length})',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              if (listItems.isNotEmpty)
-                SizedBox(
-                  height: 40,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await controller.clearAllOrders();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+          SectionHeader(
+            title: 'Registered Orders (${listItems.length})',
+            trailing: listItems.isNotEmpty
+                ? SizedBox(
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        await controller.clearAllOrders();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
+                      child: const Text('Clear All'),
                     ),
-                    child: const Text('Clear All'),
-                  ),
-                ),
-            ],
+                  )
+                : null,
           ),
           const SizedBox(height: 18),
           if (listItems.isEmpty)
-            const Padding(
-              padding: EdgeInsets.only(top: 80),
-              child: Center(
-                child: Text(
-                  'No orders yet. Add your first order above!',
-                  style: TextStyle(fontSize: 16, color: Color(0xFF9DA4B5)),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+            const EmptyStateWidget(
+              icon: Icons.inventory_2_outlined,
+              title: 'No orders yet',
+              message: 'Add your first product order using the form above.',
             )
           else
-            ...listItems.asMap().entries.map(
-                  (entry) {
-                final index = entry.key;
-                final order = entry.value;
+            ...listItems.asMap().entries.map((entry) {
+              final index = entry.key;
+              final order = entry.value;
 
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 14),
-                  child: OrderListCard(
-                    order: order,
-                    displayIndex: index + 1,
-                    onToggle: (value) async {
-                      await controller.toggleSelected(order, value);
-                    },
-                    onEdit: () async {
-                      await controller.showEditDialog(
-                        context: context,
-                        order: order,
-                        onUpdated: () {},
-                      );
-                    },
-                    onDelete: () async {
-                      await controller.deleteOrder(order.id!);
-                    },
-                  ),
-                );
-              },
-            ),
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: OrderListCard(
+                  order: order,
+                  displayIndex: index + 1,
+                  onToggle: (value) async {
+                    await controller.toggleSelected(order, value);
+                  },
+                  onEdit: () async {
+                    await _showEditDialog(context, order);
+                  },
+                  onDelete: () async {
+                    await controller.deleteOrder(order.id!);
+                  },
+                ),
+              );
+            }),
         ],
       ),
+    );
+  }
+
+  Future<void> _showEditDialog(BuildContext context, OrderModel order) {
+    return showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (_) {
+        return OrderFormDialog(
+          title: 'Edit Order',
+          subtitle: 'Update the product name and quantity',
+          productName: order.productName,
+          quantity: order.quantity,
+          onSubmit: (productName, quantity) {
+            return controller.updateOrderFromInput(
+              order: order,
+              productName: productName,
+              quantity: quantity,
+            );
+          },
+        );
+      },
     );
   }
 }

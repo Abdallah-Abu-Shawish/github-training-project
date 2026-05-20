@@ -38,45 +38,22 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 500),
     );
 
-    _logoTurns = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _logoController,
-        curve: Curves.linearToEaseOut,
-      ),
+    _logoTurns = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.linearToEaseOut),
     );
 
-    _logoScale = Tween<double>(
-      begin: 0.86,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _logoController,
-        curve: Curves.easeOutBack,
-      ),
+    _logoScale = Tween<double>(begin: 0.86, end: 1.0).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.easeOutBack),
     );
 
-    _lineFactor = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _lineController,
-        curve: Curves.easeOutCubic,
-      ),
+    _lineFactor = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _lineController, curve: Curves.easeOutCubic),
     );
 
     _fadeOpacity = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(
-      CurvedAnimation(
-        parent: _fadeController,
-        curve: Curves.easeIn,
-      ),
-    );
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
 
     _startAnimations();
   }

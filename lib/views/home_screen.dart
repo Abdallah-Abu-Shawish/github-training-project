@@ -26,28 +26,39 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> addOrder() async {
-    final name = productController.text.trim();
-    final qty = int.tryParse(quantityController.text.trim()) ?? 0;
+    final error = await controller.addOrderFromInput(
+      productName: productController.text,
+      quantity: quantityController.text,
+    );
 
-    if (name.isEmpty || qty <= 0) return;
+    if (error != null) {
+      showMessage(error, isError: true);
+      return;
+    }
 
-    await controller.addOrder(name, qty);
     productController.clear();
     quantityController.clear();
   }
 
-  void showCompleteMessage(int count) {
+  void showMessage(String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.white,
+        backgroundColor: isError ? const Color(0xFFFFF4F2) : Colors.white,
         content: Text(
-          '$count item(s) marked as complete!',
-          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+          message,
+          style: TextStyle(
+            color: isError ? const Color(0xFFD92D20) : Colors.black,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
+  }
+
+  void showCompleteMessage(int count) {
+    showMessage('$count item(s) marked as complete!');
   }
 
   @override
@@ -70,29 +81,27 @@ class _HomeScreenState extends State<HomeScreen> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
-      body: Obx(
-        () {
-          final pages = [
-            ListScreen(
-              controller: controller,
-              productController: productController,
-              quantityController: quantityController,
-              onAdd: addOrder,
-            ),
-            SelectedScreen(
-              controller: controller,
-              onCompleted: showCompleteMessage,
-            ),
-            CompleteScreen(controller: controller),
-          ];
+      body: Obx(() {
+        final pages = [
+          ListScreen(
+            controller: controller,
+            productController: productController,
+            quantityController: quantityController,
+            onAdd: addOrder,
+          ),
+          SelectedScreen(
+            controller: controller,
+            onCompleted: showCompleteMessage,
+          ),
+          CompleteScreen(controller: controller),
+        ];
 
-          if (controller.isLoading.value) {
-            return const Center(child: CircularProgressIndicator());
-          }
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          return pages[currentIndex];
-        },
-      ),
+        return pages[currentIndex];
+      }),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black,
         selectedItemColor: Colors.white,

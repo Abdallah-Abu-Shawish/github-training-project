@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:orders_manager/views/widgets/empty_state_widget.dart';
 import 'package:orders_manager/views/widgets/primary_button.dart';
 import 'package:orders_manager/views/widgets/selected_order_card.dart';
+import 'package:orders_manager/views/widgets/summary_card.dart';
 import '../controllers/order_controller.dart';
-
 
 class SelectedScreen extends StatelessWidget {
   final OrderController controller;
@@ -17,62 +18,42 @@ class SelectedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedItems = controller.selectedItems(controller.orders);
-    final totalQuantity = controller.selectedTotalQuantity(controller.orders);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Selected Items (${selectedItems.length})',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                if (selectedItems.isNotEmpty) ...[
-                  const SizedBox(height: 18),
-
-                  PrimaryButton(
-                    text: 'Complete Selected Items',
-                    backgroundColor: const Color(0xFF06A537),
-                    foregroundColor: Colors.white,
-                    onPressed: () async {
-                      final count = await controller.completeSelectedItems();
-                      onCompleted(count);
-                    },
-                  ),
-                ],
-              ],
-            ),
+          SummaryCard(
+            icon: Icons.check_box_outlined,
+            title: 'Selected Items',
+            value: '${controller.selectedOrdersCount} order(s)',
+            subtitle: 'Total quantity: ${controller.selectedQuantityTotal}',
+            color: const Color(0xFF334E75),
           ),
+          if (selectedItems.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            PrimaryButton(
+              text: 'Complete Selected Items',
+              backgroundColor: const Color(0xFF06A537),
+              foregroundColor: Colors.white,
+              onPressed: () async {
+                final count = await controller.completeSelectedItems();
+                onCompleted(count);
+              },
+            ),
+          ],
           const SizedBox(height: 18),
           if (selectedItems.isEmpty)
-            const Padding(
-              padding: EdgeInsets.only(top: 90),
-              child: Text(
-                'No items selected. Go to the List tab and select items.',
-                style: TextStyle(fontSize: 16, color: Color(0xFF9DA4B5)),
-                textAlign: TextAlign.center,
-              ),
+            const EmptyStateWidget(
+              icon: Icons.check_box_outline_blank,
+              title: 'No selected orders',
+              message:
+                  'Choose orders from the List tab before completing them.',
             )
           else ...[
             ...selectedItems.map(
-                  (order) => Padding(
+              (order) => Padding(
                 padding: const EdgeInsets.only(bottom: 14),
                 child: SelectedOrderCard(
                   order: order,
@@ -83,35 +64,6 @@ class SelectedScreen extends StatelessWidget {
                     await controller.deleteOrder(order.id!);
                   },
                 ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Total Quantity:',
-                    style: TextStyle(fontSize: 16, color: Color(0xFF334E75)),
-                  ),
-                  Text(
-                    '$totalQuantity',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
               ),
             ),
           ],

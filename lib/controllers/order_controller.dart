@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../database/db_helper.dart';
 import '../models/order_model.dart';
@@ -6,6 +5,12 @@ import '../models/order_model.dart';
 class OrderController extends GetxController {
   final RxList<OrderModel> orders = <OrderModel>[].obs;
   final RxBool isLoading = false.obs;
+
+  int get totalOrders => orders.length;
+  int get selectedOrdersCount => selectedItems(orders).length;
+  int get completedOrdersCount => completedItems(orders).length;
+  int get selectedQuantityTotal => selectedTotalQuantity(orders);
+  int get completedQuantityTotal => completedTotalQuantity(orders);
 
   Future<void> loadOrders() async {
     isLoading.value = true;
@@ -20,6 +25,51 @@ class OrderController extends GetxController {
     final db = await DBHelper.database;
     final result = await db.query('orders', orderBy: 'id DESC');
     return result.map((e) => OrderModel.fromMap(e)).toList();
+  }
+
+  String? validateOrderInput({
+    required String productName,
+    required String quantity,
+  }) {
+    final name = productName.trim();
+    final parsedQuantity = int.tryParse(quantity.trim());
+
+    if (name.isEmpty) {
+      return 'Product name is required.';
+    }
+
+    if (name.length < 2) {
+      return 'Product name is too short.';
+    }
+
+    if (parsedQuantity == null) {
+      return 'Quantity must be a number.';
+    }
+
+    if (parsedQuantity <= 0) {
+      return 'Quantity must be greater than zero.';
+    }
+
+    if (parsedQuantity > 9999) {
+      return 'Quantity is too large.';
+    }
+
+    return null;
+  }
+
+  Future<String?> addOrderFromInput({
+    required String productName,
+    required String quantity,
+  }) async {
+    final error = validateOrderInput(
+      productName: productName,
+      quantity: quantity,
+    );
+
+    if (error != null) return error;
+
+    await addOrder(productName.trim(), int.parse(quantity.trim()));
+    return null;
   }
 
   Future<void> addOrder(String productName, int quantity) async {
@@ -37,6 +87,28 @@ class OrderController extends GetxController {
     });
 
     await loadOrders();
+  }
+
+  Future<String?> updateOrderFromInput({
+    required OrderModel order,
+    required String productName,
+    required String quantity,
+  }) async {
+    final error = validateOrderInput(
+      productName: productName,
+      quantity: quantity,
+    );
+
+    if (error != null) return error;
+
+    await updateOrder(
+      order.copyWith(
+        productName: productName.trim(),
+        quantity: int.parse(quantity.trim()),
+      ),
+    );
+
+    return null;
   }
 
   Future<void> updateOrder(OrderModel order) async {
@@ -129,130 +201,5 @@ class OrderController extends GetxController {
 
   int completedTotalQuantity(List<OrderModel> orders) {
     return completedItems(orders).fold(0, (sum, item) => sum + item.quantity);
-  }
-
-  Future<void> showEditDialog({
-    required BuildContext context,
-    required OrderModel order,
-    required VoidCallback onUpdated,
-  }) async {
-    final productController = TextEditingController(text: order.productName);
-    final quantityController = TextEditingController(text: order.quantity.toString());
-
-    await showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (_) {
-        return Dialog(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Edit Order',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Update the product name and quantity',
-                  style: TextStyle(color: Color(0xFF8E8E9A), fontSize: 14),
-                ),
-                const SizedBox(height: 16),
-                const Text('Product Name', style: TextStyle(fontWeight: FontWeight.w600)),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: productController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color(0xFFF1F1F1),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                const Text('Quantity', style: TextStyle(fontWeight: FontWeight.w600)),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: quantityController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color(0xFFF1F1F1),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 18),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          final name = productController.text.trim();
-                          final qty = int.tryParse(quantityController.text.trim()) ?? 0;
-
-                          if (name.isEmpty || qty <= 0) return;
-
-                          await updateOrder(
-                            order.copyWith(
-                              productName: name,
-                              quantity: qty,
-                            ),
-                          );
-
-                          if (context.mounted) {
-                            Navigator.pop(context);
-                            onUpdated();
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
-                          minimumSize: const Size.fromHeight(48),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text('Update'),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: OutlinedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(48),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text('Cancel'),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 }
