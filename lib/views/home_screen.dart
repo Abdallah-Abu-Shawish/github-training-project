@@ -209,7 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: EdgeInsets.only(bottom: 4),
                 child: selectedNavIcon(Icons.check_circle_outline),
               ),
-              label: 'Complete',
+              label: 'Completed',
             ),
           ],
         ),
