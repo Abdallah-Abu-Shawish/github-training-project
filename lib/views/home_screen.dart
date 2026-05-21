@@ -61,6 +61,17 @@ class _HomeScreenState extends State<HomeScreen> {
     showMessage('$count item(s) marked as complete!');
   }
 
+  Widget selectedNavIcon(IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E2535),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Icon(icon),
+    );
+  }
+
   @override
   void dispose() {
     Get.delete<OrderController>();
@@ -139,29 +150,69 @@ class _HomeScreenState extends State<HomeScreen> {
 
         return pages[currentIndex];
       }),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: const Color(0xFFA6AEC1),
-        currentIndex: currentIndex,
-        type: BottomNavigationBarType.fixed,
-        onTap: (index) {
-          setState(() => currentIndex = index);
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.format_list_bulleted_rounded),
-            label: 'List',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.check_box_outlined),
-            label: 'Selected',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.check_circle_outline),
-            label: 'Complete',
-          ),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.black,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.18),
+              blurRadius: 16,
+              offset: const Offset(0, -4),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          backgroundColor: Colors.black,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: const Color(0xFF8E97AA),
+          currentIndex: currentIndex,
+          type: BottomNavigationBarType.fixed,
+          elevation: 0,
+          selectedFontSize: 13,
+          unselectedFontSize: 12,
+          selectedIconTheme: const IconThemeData(size: 28),
+          unselectedIconTheme: const IconThemeData(size: 24),
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
+          onTap: (index) {
+            setState(() => currentIndex = index);
+          },
+          items: [
+            BottomNavigationBarItem(
+              icon: const Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: Icon(Icons.format_list_bulleted_rounded),
+              ),
+              activeIcon: Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: selectedNavIcon(Icons.format_list_bulleted_rounded),
+              ),
+              label: 'List',
+            ),
+            BottomNavigationBarItem(
+              icon: const Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: Icon(Icons.check_box_outlined),
+              ),
+              activeIcon: Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: selectedNavIcon(Icons.check_box_outlined),
+              ),
+              label: 'Selected',
+            ),
+            BottomNavigationBarItem(
+              icon: const Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: Icon(Icons.check_circle_outline),
+              ),
+              activeIcon: Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: selectedNavIcon(Icons.check_circle_outline),
+              ),
+              label: 'Complete',
+            ),
+          ],
+        ),
       ),
     );
   }
