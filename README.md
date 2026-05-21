@@ -1,31 +1,80 @@
 # Orders Manager
 
-Orders Manager is a Flutter app for managing simple product orders. The app lets the user add orders, select the orders that should be completed, and keep a separate list of completed orders.
+Orders Manager is a Flutter mobile application for managing simple product orders. The app allows the user to add orders, select the orders that are ready to be completed, and keep completed orders in a separate screen.
 
-I worked on this project as part of my Git and GitHub training assignment. The main goal was to practice a real workflow: local commits, a feature branch, a pull request, and a clean project structure.
+This project was built for the Git and GitHub field training assignment. I used it to practice working with Git commands, multiple commits, branches, issues, pull requests, and a clean project structure.
 
-Repository:
+Repository link:
+
+```text
 https://github.com/Abdallah-Abu-Shawish/github-training-project
+```
 
-## Features
+## Project Idea
 
-- Add a product order with a name and quantity
-- Validate order input before saving
-- Show active orders in a list
+The idea of the app is simple: instead of keeping orders written randomly, the user can enter the product name and quantity, then manage the order through three main sections:
+
+- active orders
+- selected orders
+- completed orders
+
+The project is small, but it follows a clear structure so the code is easier to read and improve.
+
+## Main Features
+
+- Add new product orders
+- Validate product name and quantity before saving
+- Display all active orders
 - Select and unselect orders
 - Complete selected orders
-- View completed orders separately
+- Display completed orders separately
+- Show total quantities for selected and completed orders
 - Delete orders with a confirmation dialog
-- Show helpful empty states when there are no orders
-- Handle loading errors with a retry button
+- Show empty states when there is no data
+- Handle loading errors with a retry option
+- Use a separate branch for a bottom navigation design update
 
-## Technologies
+## Screenshots
+
+Place the project screenshots inside a folder named `screenshots`.
+
+Recommended screenshot names:
+
+```text
+screenshots/
+  splash_screen.png
+  orders_list.png
+  selected_orders.png
+  completed_orders.png
+  navigation_update.png
+```
+
+After adding the screenshots, this section can display them like this:
+
+### Splash Screen
+
+![Splash Screen](screenshots/splash_screen.png)
+
+### Orders List
+
+![Orders List](screenshots/orders_list.png)
+
+### Selected Orders
+
+![Selected Orders](screenshots/selected_orders.png)
+
+### Completed Orders
+
+![Completed Orders](screenshots/completed_orders.png)
+
+## Technologies Used
 
 - Flutter
 - Dart
-- GetX for state management
-- SQLite database using `sqflite`
-- Git and GitHub
+- GetX
+- sqflite
+- Git
+- GitHub
 
 ## Project Structure
 
@@ -44,30 +93,58 @@ lib/
     selected_screen.dart
     splash_screen.dart
     widgets/
+      app_card.dart
+      confirm_action_dialog.dart
+      custom_text_field.dart
+      empty_state_widget.dart
+      order_form_dialog.dart
+      order_list_card.dart
+      primary_button.dart
+      section_header.dart
+      selected_order_card.dart
+      summary_card.dart
 ```
 
-The controller contains the order state and main app logic. The database folder has the SQLite helper, the model folder has the order data model, and the views folder contains the screens and reusable widgets.
+## Code Organization
 
-## Screenshots
+The project is organized into small folders with clear responsibilities:
 
-Screenshots should be placed inside a folder named `screenshots`.
+- `controllers`: contains order state and order actions
+- `database`: contains the SQLite database helper
+- `models`: contains the order data model
+- `views`: contains the main app screens
+- `views/widgets`: contains reusable UI widgets used by the screens
+- `images`: contains app image assets
 
-Suggested files:
+This structure keeps the screen files cleaner and makes the order logic easier to maintain.
+
+## Git Workflow
+
+The project was developed using Git from the local machine. The main work was done on the `master` branch, and a separate feature branch was created for the design update.
+
+Feature branch:
 
 ```text
-screenshots/
-  list_screen.png
-  selected_screen.png
-  completed_screen.png
-  design_update.png
+feature/design-update
 ```
 
-After adding the images, they can be shown in this section like this:
+The feature branch was used for the BottomNavigationBar design improvement. This branch is intended to be reviewed and merged through a Pull Request on GitHub.
 
-```md
-![List Screen](screenshots/list_screen.png)
-![Selected Screen](screenshots/selected_screen.png)
-![Completed Screen](screenshots/completed_screen.png)
+## Important Git Commands Used
+
+```bash
+git init
+git add .
+git commit -m "first commit"
+git status
+git log --graph
+git branch
+git checkout -b feature/design-update
+git checkout master
+git merge feature/design-update
+git remote add origin https://github.com/Abdallah-Abu-Shawish/github-training-project.git
+git push origin master
+git push origin feature/design-update
 ```
 
 ## How to Run the Project
@@ -90,21 +167,27 @@ cd github-training-project
 flutter pub get
 ```
 
-4. Run the app:
+4. Run the project:
 
 ```bash
 flutter run
 ```
 
-## Git Workflow Used
+## Assignment Checklist
 
-I used `master` for the main project work and created a separate branch for the design update:
-
-```text
-feature/design-update
-```
-
-The design branch includes the BottomNavigationBar improvement only. The plan is to push both branches to GitHub, open a pull request from `feature/design-update` into `master`, and merge it from GitHub after review.
+- Repository created on GitHub
+- Repository is public
+- Flutter project added to the repository
+- `.gitignore` included
+- More than five commits added
+- Feature branch created
+- Branch design update added
+- Branch merged with `master`
+- README updated
+- Issue created on GitHub
+- Pull Request created on GitHub
+- Project screenshots prepared
+- PDF report prepared for submission
 
 ## Student
 
