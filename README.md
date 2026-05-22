@@ -46,7 +46,6 @@ screenshots/
   orders_list.png
   selected_orders.png
   completed_orders.png
-  navigation_update.png
 ```
 
 After adding the screenshots, this section can display them like this:
