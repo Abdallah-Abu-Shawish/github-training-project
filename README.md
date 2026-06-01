@@ -10,6 +10,12 @@ Repository link:
 https://github.com/Abdallah-Abu-Shawish/github-training-project
 ```
 
+Live GitHub Pages link:
+
+```text
+https://abdallah-abu-shawish.github.io/github-training-project/
+```
+
 ## Project Idea
 
 The idea of the app is simple: instead of keeping orders written randomly, the user can enter the product name and quantity, then manage the order through three main sections:
@@ -74,6 +80,33 @@ After adding the screenshots, this section can display them like this:
 - sqflite
 - Git
 - GitHub
+
+## GitHub Pages Deployment
+
+The project has been deployed as a Flutter Web app using GitHub Pages.
+
+Deployment is handled automatically with a GitHub Actions workflow located at:
+
+```text
+.github/workflows/deploy.yml
+```
+
+When changes are pushed to the `master` branch, the workflow:
+
+- checks out the repository
+- sets up Flutter stable
+- installs project dependencies
+- builds the web version in release mode
+- uploads the `build/web` folder as a GitHub Pages artifact
+- deploys the artifact to GitHub Pages
+
+The web build uses this command:
+
+```bash
+flutter build web --release --base-href /github-training-project/
+```
+
+The `base-href` value is required because the app is published under the repository path on GitHub Pages.
 
 ## Project Structure
 
@@ -185,6 +218,7 @@ flutter run
 - README updated
 - Issue created on GitHub
 - Pull Request created on GitHub
+- GitHub Pages deployment completed
 - Project screenshots prepared
 - PDF report prepared for submission
 
