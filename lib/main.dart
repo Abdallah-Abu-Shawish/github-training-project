@@ -10,6 +10,8 @@ void main() {
 class OrdersApp extends StatelessWidget {
   const OrdersApp({super.key});
 
+  static const double mobileWidth = 430;
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -21,6 +23,42 @@ class OrdersApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
       ),
+
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+
+        final double width = mediaQuery.size.width < mobileWidth
+            ? mediaQuery.size.width
+            : mobileWidth;
+
+        return Container(
+          color: const Color(0xFFE5E7EB),
+          alignment: Alignment.center,
+          child: Container(
+            width: width,
+            height: mediaQuery.size.height,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF9FAFB),
+              boxShadow: mediaQuery.size.width > mobileWidth
+                  ? [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.14),
+                  blurRadius: 30,
+                  offset: const Offset(0, 10),
+                ),
+              ]
+                  : [],
+            ),
+            child: MediaQuery(
+              data: mediaQuery.copyWith(
+                size: Size(width, mediaQuery.size.height),
+              ),
+              child: child ?? const SizedBox(),
+            ),
+          ),
+        );
+      },
+
       home: const SplashScreen(),
     );
   }
